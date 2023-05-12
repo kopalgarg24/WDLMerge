@@ -1,12 +1,24 @@
-task task1 {
+task Task1 {
     input {
-        File input_file
-        String param1
+        String input1
     }
     command {
-        echo "Running task1 with input file: ${input_file} and param1: ${param1}"
+        echo "Running Task1 with input: ${input1}"
     }
     output {
-        File output_file = "output.txt"
+        String output1 = read_string(stdout())
+    }
+}
+
+workflow Workflow1 {
+    input {
+        String workflow_input1
+    }
+    output {
+        String workflow_output1 = Task1.output1
+    }
+    call Task1 {
+        input:
+            input1 = workflow_input1
     }
 }
