@@ -1,24 +1,22 @@
-task Task1 {
-    input {
-        String input1
+version 1.0
+    workflow w {
+        call sum as sum1 {
+            input: x = 1, y = 2
+        }
+        Int twice = 2*sum1.z
+        call sum as sum2 {
+            input: x = sum1.z, y = twice
+        }
     }
-    command {
-        echo "Running Task1 with input: ${input1}"
+    task sum {
+        input {
+            Int x
+            Int y
+        }
+        command {
+            echo $(( ~{x} + ~{y} ))
+        }
+        output {
+            Int z = read_int(stdout())
+        }
     }
-    output {
-        String output1 = read_string(stdout())
-    }
-}
-
-workflow Workflow1 {
-    input {
-        String workflow_input1
-    }
-    output {
-        String workflow_output1 = Task1.output1
-    }
-    call Task1 {
-        input:
-            input1 = workflow_input1
-    }
-}
