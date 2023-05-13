@@ -79,16 +79,13 @@ def upgrade_wdl(wdl_file_path):
     if not os.path.exists(womtool_jar):
         # Download womtool
         subprocess.run(['wget', 'https://github.com/broadinstitute/cromwell/releases/download/85/' + womtool_jar])
-    
-    # Validate WDL file
-    subprocess.run(['java', '-jar', womtool_jar, 'validate', wdl_file_path])
 
     # Upgrade WDL file
-    subprocess.run(['java', '-jar', womtool_jar, 'upgrade', wdl_file_path, '-r', '1.0'])
-
-    print("WDL file upgraded successfully!")
-
-
+    upgrade = subprocess.run(['java', '-jar', womtool_jar, 'upgrade', wdl_file_path, '-r', '1.0'])
+    upgrade_output = upgrade.stdout
+    upgrade_errors = upgrade.stderr
+    print(upgrade_output)
+    print(upgrade_errors)
 
 def validate_wdl(wdl_file_path):
     womtool_jar = 'womtool-85.jar'
@@ -99,4 +96,10 @@ def validate_wdl(wdl_file_path):
         subprocess.run(['wget', 'https://github.com/broadinstitute/cromwell/releases/download/85/' + womtool_jar])
     
     # Validate WDL file
-    subprocess.run(['java', '-jar', womtool_jar, 'validate', wdl_file_path])
+    validate_process = subprocess.run(['java', '-jar', womtool_jar, 'validate', wdl_file_path], capture_output=True, text=True)
+    validate_output = validate_process.stdout
+    validate_errors = validate_process.stderr
+
+    print(validate_output)
+    print(validate_errors)
+
