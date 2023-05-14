@@ -6,5 +6,4 @@ Install WDLMerge with pip
   pip install WDLMerge
 ```
 ## Requirements
-* numpy
 * miniwdl
