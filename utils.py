@@ -2,28 +2,28 @@
 import os
 import WDL
 import subprocess
+import csv
 def reconstruct_wdl(tasks, workflows):
     wdl_code = ""
 
     # Reconstruct tasks
-    for task in tasks:
-        task_name = task['name']
+    for task_name, task_info in tasks.items():
         task_code = f"task {task_name} {{\n"
-        if task['inputs']:
+        if task_info['inputs']:
             task_code += "    input {\n"
-            for input_var in task['inputs']:
+            for input_var in task_info['inputs']:
                 task_code += f"        {input_var}\n"
             task_code += "    }\n"
-        task_code += f"    command {{\n        {task['command']}\n    }}\n"
-        if task['outputs']:
+        task_code += f"    command {{\n        {task_info['command']}\n    }}\n"
+        if task_info['outputs']:
             task_code += "    output {\n"
-            for output_var in task['outputs']:
+            for output_var in task_info['outputs']:
                 task_code += f"        {output_var}\n"
             task_code += "    }\n"
         task_code += "}\n\n"
-        if task['runtime']:
+        if task_info['runtime']:
             task_code += "    runtime {\n"
-            for key, value in task['runtime'].items():
+            for key, value in task_info['runtime'].items():
                 task_code += f"        {key} = {value}\n"
             task_code += "    }\n"
         task_code += "}\n\n"
@@ -54,22 +54,30 @@ def reconstruct_wdl(tasks, workflows):
             for output_var in combined_workflow_outputs:
                 wdl_code += f"        {output_var}\n"
             wdl_code += "    }\n"
+        
+        added_calls = set()
         for element in combined_workflow_body:
             if isinstance(element, WDL.Tree.Call):
-                input_mappings = []
-                for input_name, input_expr in element.inputs.items():
-                    input_mappings.append(f"{input_name} = {input_expr}")
+                call_id = element.callee_id
+                if call_id not in added_calls:
+                    input_mappings = []
+                    for input_mapping in element.inputs:
+                        input_name = input_mapping.name
+                        input_expr = input_mapping.value
+                        input_mappings.append(f"{input_name} = {input_expr}")
 
-                wdl_code += f"    call {element.callee_id[0]} {{\n"
-                if input_mappings:
-                    wdl_code += "        input:\n"
-                    for input_mapping in input_mappings:
-                        wdl_code += f"            {input_mapping}\n"
-                wdl_code += "    }\n"
+                    wdl_code += f"    call {call_id} {{\n"
+                    if input_mappings:
+                        wdl_code += "        input:\n"
+                        for input_mapping in input_mappings:
+                            wdl_code += f"            {input_mapping}\n"
+                    wdl_code += "    }\n"
+                    added_calls.add(call_id)
 
         wdl_code += "}\n"
 
     return wdl_code
+
 
 
 def upgrade_wdl(wdl_file_path):
@@ -103,3 +111,12 @@ def validate_wdl(wdl_file_path):
     print(validate_output)
     print(validate_errors)
 
+def read_task_order(task_order_file):
+    task_order = []
+    with open(task_order_file, 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row:
+                task_name = row[0].strip()
+                task_order.append(task_name)
+    return task_order
