@@ -1,0 +1,9 @@
+LICENSE
+README.md
+pyproject.toml
+src/WDLMerge/__init__.py
+src/WDLMerge/main.py
+src/WDLMerge.egg-info/PKG-INFO
+src/WDLMerge.egg-info/SOURCES.txt
+src/WDLMerge.egg-info/dependency_links.txt
+src/WDLMerge.egg-info/top_level.txt
