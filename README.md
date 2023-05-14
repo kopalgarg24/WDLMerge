@@ -1,4 +1,4 @@
-# package_template
+# WDLMerge
 Merge WDLs
 ## Installation
 Install WDLMerge with pip
