@@ -6,6 +6,12 @@ import WDL
 import os
 import subprocess
 import csv
+import asyncio
+import nest_asyncio
+
+# Allow nested event loops in Jupyter notebook
+nest_asyncio.apply()
+
 
 def reconstruct_wdl(tasks, workflows):
     wdl_code = ""
@@ -24,7 +30,11 @@ def reconstruct_wdl(tasks, workflows):
             for output_var in task_info['outputs']:
                 task_code += f"        {output_var}\n"
             task_code += "    }\n"
-        task_code += "}\n\n"
+        if task_info['parameter_meta']:
+            task_code += "    parameter_meta {\n"
+            for meta_var, meta_val in task_info['parameter_meta'].items():
+                task_code += f"        {meta_var}: {meta_val}\n"
+            task_code += "    }\n"
         if task_info['runtime']:
             task_code += "    runtime {\n"
             for key, value in task_info['runtime'].items():
@@ -58,29 +68,37 @@ def reconstruct_wdl(tasks, workflows):
             for output_var in combined_workflow_outputs:
                 wdl_code += f"        {output_var}\n"
             wdl_code += "    }\n"
-        
-        added_calls = set()
+
+        added_calls = []
         for element in combined_workflow_body:
             if isinstance(element, WDL.Tree.Call):
                 call_id = element.callee_id
-                if call_id not in added_calls:
-                    input_mappings = []
-                    for input_mapping in element.inputs:
-                        input_name = input_mapping.name
-                        input_expr = input_mapping.value
-                        input_mappings.append(f"{input_name} = {input_expr}")
 
-                    wdl_code += f"    call {call_id} {{\n"
+                if element.inputs:
+                    input_mappings = []
+                    for input_name, input_expr in element.inputs.items():
+                        if isinstance(input_expr, WDL.Expr.Get):
+                            # Traverse to the actual value of the Get object
+                            get_expr = input_expr.expr
+                            input_value = get_expr.name
+                        else:
+                            input_value = input_expr
+
+                        input_mappings.append(f"{input_name} = {input_value}")
+                    #import pdb; pdb.set_trace()
+                    wdl_code += f"    call {call_id[0]} as {vars(element)['name']} {{\n"
                     if input_mappings:
                         wdl_code += "        input:\n"
                         for input_mapping in input_mappings:
                             wdl_code += f"            {input_mapping}\n"
                     wdl_code += "    }\n"
-                    added_calls.add(call_id)
+                    added_calls.append(call_id)
 
         wdl_code += "}\n"
 
     return wdl_code
+
+
 
 def upgrade_wdl(wdl_file_path):
     womtool_jar = 'womtool-85.jar'
