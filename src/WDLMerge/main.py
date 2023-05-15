@@ -6,12 +6,11 @@ import WDL
 import os
 import subprocess
 import csv
-import asyncio
-import nest_asyncio
+#import asyncio
+#import nest_asyncio
 
 # Allow nested event loops in Jupyter notebook
-nest_asyncio.apply()
-
+#nest_asyncio.apply()
 
 def reconstruct_wdl(tasks, workflows):
     wdl_code = ""

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: WDLMerge
-Version: 0.0.8
+Version: 0.0.9
 Summary: Merge WDLs
 Author-email: Kopal Garg <gargkopal24@gmail.com>
 Classifier: Programming Language :: Python :: 3
@@ -10,7 +10,7 @@ Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
-# package_template
+# WDLMerge
 Merge WDLs
 ## Installation
 Install WDLMerge with pip
@@ -18,5 +18,4 @@ Install WDLMerge with pip
   pip install WDLMerge
 ```
 ## Requirements
-* numpy
 * miniwdl
