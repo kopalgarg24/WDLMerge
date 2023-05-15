@@ -39,3 +39,6 @@ validate_wdl('WDL_1.wdl')
 !wget https://raw.githubusercontent.com/gatk-workflows/gatk4-germline-snps-indels/1.1.2/joint-discovery-gatk4-local.wdl
 upgrade_wdl('joint-discovery-gatk4-local.wdl')
 ```
+
+### TODO
+- specify WDL task order
