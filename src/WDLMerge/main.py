@@ -76,16 +76,18 @@ def reconstruct_wdl(tasks, workflows):
 
                 if element.inputs:
                     input_mappings = []
+                    
                     for input_name, input_expr in element.inputs.items():
                         if isinstance(input_expr, WDL.Expr.Get):
                             # Traverse to the actual value of the Get object
                             get_expr = input_expr.expr
                             input_value = get_expr.name
                         else:
+                            
                             input_value = input_expr
 
                         input_mappings.append(f"{input_name} = {input_value}")
-                    #import pdb; pdb.set_trace()
+                    
                     wdl_code += f"    call {call_id[0]} as {vars(element)['name']} {{\n"
                     if input_mappings:
                         wdl_code += "        input:\n"
@@ -93,6 +95,11 @@ def reconstruct_wdl(tasks, workflows):
                             wdl_code += f"            {input_mapping}\n"
                     wdl_code += "    }\n"
                     added_calls.append(call_id)
+            else:
+                #import pdb; pdb.set_trace()
+                wdl_code+=f"    {str(element) }"
+                wdl_code += "  \n"
+
 
         wdl_code += "}\n"
 
@@ -133,7 +140,7 @@ def validate_wdl(wdl_file_path):
 
 
 def merge_wdls(WDLs, order=None):
-    wdl_files = WDLs
+    wdl_files = set(WDLs)  # Convert WDLs to a set
     task_order = order
 
     task_attributes = {}
@@ -188,8 +195,11 @@ def merge_wdls(WDLs, order=None):
                 call_statements.append(WDL.Call(pos=None, alias=None, callee_id=task_name, inputs=call_inputs))
 
         # Modify the workflow body to include the call statements in the specified order
+        added_calls = set()  # Create a set to store added calls
         for workflow in workflow_attributes:
             workflow['body'] = call_statements
+            added_calls.add(tuple(call_statements))  # Convert call_statements to a tuple and add to added_calls set
+
     reconstructed_wdl = reconstruct_wdl(task_attributes, workflow_attributes)
 
     print(reconstructed_wdl)
