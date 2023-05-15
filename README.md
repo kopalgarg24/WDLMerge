@@ -28,12 +28,12 @@ nest_asyncio.apply()
 wdl=merge_wdls(WDLs=["WDL_1.wdl", "WDL_2.wdl"])
 ```
 
-### Upgrade WDL
+### Validate WDL
 ```python
 validate_wdl('WDL_1.wdl')
 ```
 
-### Validate WDL
+### Upgrade WDL
 ```python
 # Get a WDL written in one of the older versions
 !wget https://raw.githubusercontent.com/gatk-workflows/gatk4-germline-snps-indels/1.1.2/joint-discovery-gatk4-local.wdl
