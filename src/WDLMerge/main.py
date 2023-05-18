@@ -115,7 +115,7 @@ def upgrade_wdl(wdl_file_path):
         subprocess.run(['wget', 'https://github.com/broadinstitute/cromwell/releases/download/85/' + womtool_jar])
 
     # Upgrade WDL file
-    upgrade = subprocess.run(['java', '-jar', womtool_jar, 'upgrade', wdl_file_path, '-r', '1.0'])
+    upgrade = subprocess.run(['java', '-jar', womtool_jar, 'upgrade', wdl_file_path])
     upgrade_output = upgrade.stdout
     upgrade_errors = upgrade.stderr
     print(upgrade_output)
