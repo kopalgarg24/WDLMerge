@@ -113,14 +113,16 @@ def upgrade_wdl(wdl_file_path):
     if not os.path.exists(womtool_jar):
         # Download womtool
         subprocess.run(['wget', 'https://github.com/broadinstitute/cromwell/releases/download/85/' + womtool_jar])
-
     # Upgrade WDL file
     command = 'java -jar ' + womtool_jar + ' upgrade ' + wdl_file_path
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     new_wdl=result.stdout
-    print("Updated WDL: ", wdl_file_path)
-    with open(wdl_file_path, 'w') as file:
-        file.write(new_wdl)
+    if new_wdl == '':
+        print('Already up to date.')
+    else:
+        print("Updated WDL: ", wdl_file_path)
+        with open(wdl_file_path, 'w') as file:
+            file.write(new_wdl)
 
 
 def validate_wdl(wdl_file_path):
@@ -135,7 +137,7 @@ def validate_wdl(wdl_file_path):
     validate_process = subprocess.run(['java', '-jar', womtool_jar, 'validate', wdl_file_path], capture_output=True, text=True)
     validate_output = validate_process.stdout
     validate_errors = validate_process.stderr
-
+    print("Validation Result for ", wdl_file_path,":")
     print(validate_output)
     print(validate_errors)
 
@@ -148,6 +150,7 @@ def merge_wdls(WDLs, order=None):
     workflow_attributes = []
 
     for wdl_file in wdl_files:
+
         document = WDL.load(wdl_file)
         workflows = document.workflow
         tasks = document.tasks
@@ -203,6 +206,6 @@ def merge_wdls(WDLs, order=None):
 
     reconstructed_wdl = reconstruct_wdl(task_attributes, workflow_attributes)
 
-    print(reconstructed_wdl)
+    #print(reconstructed_wdl)
 
     return reconstructed_wdl
