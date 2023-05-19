@@ -12,7 +12,7 @@ import csv
 # Allow nested event loops in Jupyter notebook
 #nest_asyncio.apply()
 
-def reconstruct_wdl(tasks, workflows):
+def reconstruct_wdl(tasks, workflows, tasks_order):
     wdl_code = "version 1.0\n\n"
     # Reconstruct tasks
     for task_name, task_info in tasks.items():
@@ -68,7 +68,21 @@ def reconstruct_wdl(tasks, workflows):
             wdl_code += "    }\n"
 
         added_calls = []
+        
+        # Get the list of tasks
+        # tasks_order=[]
+        #for element in combined_workflow_body:
+        #    tasks_order.append(vars(element)['callee_id'])
+        
+        ordered_workflow_body = []
+
+        # Reorder the tasks in the body
         for element in combined_workflow_body:
+            for task in tasks:
+                if vars(element)['callee_id'][0] == task:
+                    ordered_workflow_body.append(element)
+        
+        for element in ordered_workflow_body:
             if isinstance(element, WDL.Tree.Call):
                 call_id = element.callee_id
 
@@ -141,9 +155,9 @@ def validate_wdl(wdl_file_path):
     print(validate_errors)
 
 
-def merge_wdls(WDLs, order=None):
+def merge_wdls(WDLs, tasks_order=None):
     wdl_files = set(WDLs)  # Convert WDLs to a set
-    task_order = order
+    task_order = tasks_order
 
     task_attributes = {}
     workflow_attributes = []
@@ -177,34 +191,7 @@ def merge_wdls(WDLs, order=None):
             }
             workflow_attributes.append(workflow_info)
 
-    # Generate the WDL statements for calling tasks in the specified order
-    if task_order:
-        call_statements = []
-        for task_name in task_order:
-            if task_name in task_attributes:
-                task_info = task_attributes[task_name]
-                call_inputs = []
-                if isinstance(task_info['inputs'], list):  # Check if inputs is a list
-                    # Use placeholder names for input names
-                    call_inputs = [
-                        WDL.Env.Binding(f"input_{i}", WDL.Value.String(f"input_{i}"))
-                        for i, _ in enumerate(task_info['inputs'])
-                    ]
-                else:
-                    call_inputs = [
-                        WDL.Env.Binding(input_name, WDL.Value.String(input_name))
-                        for input_name in task_info['inputs']
-                    ]
-                call_statements.append(WDL.Call(pos=None, alias=None, callee_id=task_name, inputs=call_inputs))
 
-        # Modify the workflow body to include the call statements in the specified order
-        added_calls = set()  # Create a set to store added calls
-        for workflow in workflow_attributes:
-            workflow['body'] = call_statements
-            added_calls.add(tuple(call_statements))  # Convert call_statements to a tuple and add to added_calls set
-
-    reconstructed_wdl = reconstruct_wdl(task_attributes, workflow_attributes)
-
-    #print(reconstructed_wdl)
+    reconstructed_wdl = reconstruct_wdl(task_attributes, workflow_attributes, task_order)
 
     return reconstructed_wdl
