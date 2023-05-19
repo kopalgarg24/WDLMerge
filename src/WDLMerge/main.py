@@ -90,7 +90,7 @@ def reconstruct_wdl(tasks, workflows):
                     if input_mappings:
                         wdl_code += "        input:\n"
                         for input_mapping in input_mappings:
-                            wdl_code += f"            {input_mapping}\n"
+                            wdl_code += f"            {input_mapping},\n"
                     wdl_code += "    }\n"
                     added_calls.append(call_id)
             else:
