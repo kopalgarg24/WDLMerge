@@ -3,7 +3,7 @@ Merge WDLs
 ## Installation
 Install WDLMerge with pip
 ```bash
-  pip install -i https://test.pypi.org/simple/ WDLMerge==0.0.9
+  pip install -i https://test.pypi.org/simple/ WDLMerge==0.1.1
   pip install miniwdl
 ```
 ## Requirements
