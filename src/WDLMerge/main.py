@@ -13,8 +13,7 @@ import csv
 #nest_asyncio.apply()
 
 def reconstruct_wdl(tasks, workflows):
-    wdl_code = ""
-
+    wdl_code = "version 1.0\n\n"
     # Reconstruct tasks
     for task_name, task_info in tasks.items():
         task_code = f"task {task_name} {{\n"
@@ -37,7 +36,7 @@ def reconstruct_wdl(tasks, workflows):
         if task_info['runtime']:
             task_code += "    runtime {\n"
             for key, value in task_info['runtime'].items():
-                task_code += f"        {key} = {value}\n"
+                task_code += f"        {key} : {value}\n"
             task_code += "    }\n"
         task_code += "}\n\n"
 
@@ -118,7 +117,7 @@ def upgrade_wdl(wdl_file_path):
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     new_wdl=result.stdout
     if new_wdl == '':
-        print('Already up to date.')
+        print(wdl_file_path, 'is already up to date.')
     else:
         print("Updated WDL: ", wdl_file_path)
         with open(wdl_file_path, 'w') as file:
