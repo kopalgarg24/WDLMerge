@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: WDLMerge
-Version: 0.0.9
+Version: 0.1.0
 Summary: Merge WDLs
 Author-email: Kopal Garg <gargkopal24@gmail.com>
 Classifier: Programming Language :: Python :: 3
@@ -15,7 +15,42 @@ Merge WDLs
 ## Installation
 Install WDLMerge with pip
 ```bash
-  pip install WDLMerge
+  pip install -i https://test.pypi.org/simple/ WDLMerge==0.0.9
+  pip install miniwdl
 ```
 ## Requirements
 * miniwdl
+
+## To run in Google Colab
+```python
+from WDLMerge import *
+import WDL
+import asyncio
+import nest_asyncio
+import WDL
+
+# Allow nested event loops in Jupyter notebook
+nest_asyncio.apply()
+```
+
+## Examples
+
+### Merge WDLs
+```python
+wdl=merge_wdls(WDLs=["WDL_1.wdl", "WDL_2.wdl"])
+```
+
+### Validate WDL
+```python
+validate_wdl('WDL_1.wdl')
+```
+
+### Upgrade WDL
+```python
+# Get a WDL written in one of the older versions
+!wget https://raw.githubusercontent.com/gatk-workflows/gatk4-germline-snps-indels/1.1.2/joint-discovery-gatk4-local.wdl
+upgrade_wdl('joint-discovery-gatk4-local.wdl')
+```
+
+### TODO
+- specify WDL task order

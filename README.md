@@ -42,3 +42,13 @@ upgrade_wdl('joint-discovery-gatk4-local.wdl')
 
 ### TODO
 - specify WDL task order
+
+
+### Notes to self
+- To update the package do the following:
+```bash
+# update version in toml
+python3 -m build
+# delete the previous tar
+python3 -m twine upload --repository testpypi dist/*
+```
