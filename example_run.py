@@ -1,36 +1,46 @@
+
 from src.WDLMerge import *
 from os.path import basename, splitext
 
-wdl1='examples/Cartography_QC_h5_R_12.wdl'
-wdl2='examples/Cartography_scrublet_9.wdl'
+def merge_wdls_and_validate(*wdls):
+    merged_wdl = None
+    merged_wdl_path = None
+    
+    try:
+        # Upgrade and validate each WDL
+        for wdl in wdls:
+            upgrade_wdl(wdl)
+            validate_wdl(wdl)
+        
+        # Merge WDLs
+        merged_wdl = merge_wdls(WDLs=wdls)
+        
+        # Create a merged WDL file path
+        wdl_names = [splitext(basename(wdl))[0] for wdl in wdls]
+        merged_wdl_path = f"examples/{'_'.join(wdl_names)}_merged.wdl"
+        
+        # Write merged WDL to file
+        with open(merged_wdl_path, 'w') as file:
+            file.write(merged_wdl)
+        print(f"Merged WDL file created at: {merged_wdl_path}")
+        print('Manually resolve any validation errors in the merged WDL.')
+        # Validate merged WDL
+        validate_wdl(merged_wdl_path)
+        
+    except Exception as e:
+        print(f"Error occurred during WDL merging and validation: {str(e)}")
+        if merged_wdl_path is not None:
+            os.remove(merged_wdl_path)
+    
+    return merged_wdl_path
 
-wdl_1_name = splitext(basename(wdl1))[0]
-wdl_2_name = splitext(basename(wdl2))[0]
+# Example usage
+wdl1='examples/wdl_1.wdl'
+wdl2='examples/wdl_2.wdl'
 
-merged_wdl_1 = f"examples/{wdl_1_name}_{wdl_2_name}_merged.wdl"
+merged_wdl_path = merge_wdls_and_validate(wdl1, wdl2)
 
-# Upgrade WDL
-upgrade_wdl(wdl1)
-upgrade_wdl(wdl1)
-
-# Validate WDL
-validate_wdl(wdl1)
-validate_wdl(wdl2)
-
-# Merge WDLs
-merged_wdl=merge_wdls(WDLs=[wdl2, wdl1])
-
-with open(merged_wdl_1, 'w') as file:
-    file.write(merged_wdl)
-
-#upgrade_wdl(merged_wdl_1)
-print('Manually resolve the following errors:\n')
-
-validate_wdl(merged_wdl_1)
-
-
-# in runtime replace = with :
-# add a version 1.0 at top
-# move workflow at top
-# specify the order 
-# calls in workflow should have , after inputs 
+if merged_wdl_path is not None:
+    print('Done')
+else:
+    print('Error occurred during WDL merging and validation.')
