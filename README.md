@@ -45,7 +45,7 @@ upgrade_wdl('joint-discovery-gatk4-local.wdl')
 ```
 
 ### TODO
-- specify WDL task order
+- [x] specify WDL task order
 
 
 ### Notes to self
