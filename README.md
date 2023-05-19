@@ -27,7 +27,7 @@ nest_asyncio.apply()
 ```python
 wdl=merge_wdls(WDLs=["WDL_1.wdl", "WDL_2.wdl"])
 ```
-## Merge WDLs and Specify Task Order in Workflow
+### Merge WDLs and Specify Task Order in Workflow
 ```python
 merged_wdl = merge_wdls(WDLs=["WDL_1.wdl", "WDL_2.wdl"], tasks_order=['task1', 'task3', 'task2'])
 ```
