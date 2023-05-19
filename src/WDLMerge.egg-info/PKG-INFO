@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: WDLMerge
-Version: 0.1.0
+Version: 0.1.1
 Summary: Merge WDLs
 Author-email: Kopal Garg <gargkopal24@gmail.com>
 Classifier: Programming Language :: Python :: 3
@@ -39,6 +39,10 @@ nest_asyncio.apply()
 ```python
 wdl=merge_wdls(WDLs=["WDL_1.wdl", "WDL_2.wdl"])
 ```
+## Merge WDLs and Specify Task Order in Workflow
+```python
+merged_wdl = merge_wdls(WDLs=["WDL_1.wdl", "WDL_2.wdl"], tasks_order=['task1', 'task3', 'task2'])
+```
 
 ### Validate WDL
 ```python
@@ -54,3 +58,13 @@ upgrade_wdl('joint-discovery-gatk4-local.wdl')
 
 ### TODO
 - specify WDL task order
+
+
+### Notes to self
+- To update the package do the following:
+```bash
+# update version in toml
+python3 -m build
+# delete the previous tar
+python3 -m twine upload --repository testpypi dist/*
+```
